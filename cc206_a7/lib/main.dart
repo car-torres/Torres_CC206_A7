@@ -7,7 +7,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -31,12 +30,34 @@ class CalculatorScreen extends StatefulWidget {
 class _CalculatorScreenState extends State<CalculatorScreen> {
   // manage the sum section
   int sum = 0;
+  int sub = 0;
+  int mul = 0;
+  double div = 0;
 
-  // either use a TextEditingController for each input field to get the value
-  TextEditingController add1Controller = TextEditingController();
+  // Text controllers for the input fields
+  TextEditingController firstNumController = TextEditingController();
+  TextEditingController secondNumController = TextEditingController();
 
-  // or store each value in the state
-  int firstAddNum = 0;
+  // Clear the inputs and reset calculations
+  void clearInputs() {
+    firstNumController.clear();
+    secondNumController.clear();
+    setState(() {
+      sum = 0;
+      sub = 0;
+      mul = 0;
+      div = 0;
+    });
+  }
+
+  // Method to get the values from the text fields
+  int _getFirstNumber() {
+    return int.tryParse(firstNumController.text) ?? 0;
+  }
+
+  int _getSecondNumber() {
+    return int.tryParse(secondNumController.text) ?? 0;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,35 +74,130 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             children: [
               Expanded(
                 child: TextField(
-                  decoration: InputDecoration(labelText: "First Number"),
-                  // update the firstAddNum state
-                  onChanged: (value) {
-                    setState(() {
-                      firstAddNum = int.parse(value);
-                    });
-                  },
+                  controller: firstNumController,
+                  decoration: const InputDecoration(labelText: "First Number"),
+                  keyboardType: TextInputType.number,
                 ),
               ),
               const Text(" + "),
               Expanded(
                 child: TextField(
-                  decoration: InputDecoration(labelText: "Second Number"),
+                  controller: secondNumController,
+                  decoration: const InputDecoration(labelText: "Second Number"),
+                  keyboardType: TextInputType.number,
                 ),
               ),
-
               Text(' = $sum'),
-              // 3.a Add an IconButton here
-
-              // b.b Add an button here
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  setState(() {
+                    sum = _getFirstNumber() + _getSecondNumber();
+                  });
+                },
+              ),
             ],
           ),
-
-          // 3.c - Add the other operations
-          // Minus Row
-
+          // Subtraction Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: firstNumController,
+                  decoration: const InputDecoration(labelText: "First Number"),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              const Text(" - "),
+              Expanded(
+                child: TextField(
+                  controller: secondNumController,
+                  decoration: const InputDecoration(labelText: "Second Number"),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              Text(' = $sub'),
+              IconButton(
+                icon: const Icon(Icons.remove),
+                onPressed: () {
+                  setState(() {
+                    sub = _getFirstNumber() - _getSecondNumber();
+                  });
+                },
+              ),
+            ],
+          ),
           // Multiplication Row
-
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: firstNumController,
+                  decoration: const InputDecoration(labelText: "First Number"),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              const Text(" x "),
+              Expanded(
+                child: TextField(
+                  controller: secondNumController,
+                  decoration: const InputDecoration(labelText: "Second Number"),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              Text(' = $mul'),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  setState(() {
+                    mul = _getFirstNumber() * _getSecondNumber();
+                  });
+                },
+              ),
+            ],
+          ),
           // Division Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: firstNumController,
+                  decoration: const InputDecoration(labelText: "First Number"),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              const Text(" ÷ "),
+              Expanded(
+                child: TextField(
+                  controller: secondNumController,
+                  decoration: const InputDecoration(labelText: "Second Number"),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              Text(' = ${div.toStringAsFixed(2)}'),
+              IconButton(
+                icon: const Icon(Icons.horizontal_split), // Replace 'Icons.division'
+                onPressed: () {
+                  setState(() {
+                    int secondNum = _getSecondNumber();
+                    if (secondNum != 0) {
+                      div = _getFirstNumber() / secondNum;
+                    } else {
+                      div = 0; // Avoid division by zero
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
+          // Clear Button
+          TextButton(
+            onPressed: clearInputs,
+            child: const Text("Clear"),
+          ),
         ],
       ),
     );
